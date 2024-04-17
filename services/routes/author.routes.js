@@ -1,6 +1,8 @@
 import { Router } from "express";
 import Author from "../models/author.model.js";
 
+import BlogPost  from "../models/blogpost.model.js"
+
 //creo ed aposto il router
 export const authorRoute= Router();
 
@@ -23,6 +25,17 @@ authorRoute.get("/:id", async (req,res,next)=>{
        next(err)
     }
    })
+// blogpost per utente specifico
+authorRoute.get("/:id/blogPosts", async (req,res,next)=>{
+    try{
+       let author= await Author.findById(req.params.id);
+       let blogs= await BlogPost.find({author:{name : author.nome}})
+       res.send(blogs)
+    }catch(err){
+       next(err)
+    }
+   })
+
 //nuovo autore
 authorRoute.post("/", async (req,res,next)=>{
     try{

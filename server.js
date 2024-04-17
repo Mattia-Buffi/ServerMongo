@@ -1,9 +1,9 @@
 import express from "express";
 import { config } from "dotenv";
 import mongoose from "mongoose";
+import cors from "cors"
 import { authorRoute } from "./services/routes/author.routes.js";
 import { postRoute } from "./services/routes/post.routes.js"
-import cors from "cors"
 
 //inizilizzare file .env
 config();
