@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors());
 
 //importare le route
-app.use("/author",authorRoute);
+app.use("/authors",authorRoute);
 app.use("/blogPosts",postRoute);
 
 //inizializzare server

@@ -2,6 +2,7 @@ import { Router } from "express";
 import Author from "../models/author.model.js";
 
 import BlogPost  from "../models/blogpost.model.js"
+import cloudinaryMiddleware from "../middleware/multer.js"
 
 //creo ed aposto il router
 export const authorRoute= Router();
@@ -45,7 +46,7 @@ authorRoute.post("/", async (req,res,next)=>{
         next(err)
     }
     })
-//modifica autore
+//modifica autore da sostituire con patch
 authorRoute.put("/:id", async (req,res,next)=>{
     try{
         let author= await Author.findByIdAndUpdate(req.param.id,req.body,{ new:true});
@@ -54,7 +55,7 @@ authorRoute.put("/:id", async (req,res,next)=>{
         next(err)
     }
     })
-//elimino autore
+//elimino autore 
 authorRoute.delete("/:id", async (req,res,next)=>{
     try{
         await Author.deleteOne({_id:req.params.id,});
@@ -62,4 +63,9 @@ authorRoute.delete("/:id", async (req,res,next)=>{
     }catch(err){
         next(err)
     }
+    })
+
+    //modifica dell'avatar
+    authorRoute.patch("/:id",cloudinaryMiddleware,async(req,res,next)=>{
+        
     })
