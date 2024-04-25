@@ -24,21 +24,24 @@ import { Schema , model } from "mongoose";
             },
     },
     author: {
-        nome: {
-            type:String,
-            required: true,
-        },
-        avatar: {
-            type:String,
-            required: true,
-        },
+        type: Schema.Types.ObjectId,
+        ref:"Author",
     },
     content: {
         type:String,
         required: true,
     },
+    comments: [{
+        type: Schema.Types.ObjectId,
+        ref:"Comment",
+    }],
+    likes: [{
+        type: Schema.Types.ObjectId,
+        ref:"Author",
+    }],
     },{
-        collection:"posts"
+        collection:"posts",
+        timestamps:true,
     }
  );
  export default model("BlogPost",PostScheme);

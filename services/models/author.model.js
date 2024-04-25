@@ -22,12 +22,24 @@ const authorScheme = new Schema(
         },
         dataNascita: {
             type:String,
-            required: true,
+            required: false,
+        },
+        description: {
+            type:String,
+            required: false,
         },
         avatar: {
             type:String,
-            required: true,
+            required: false,
         },
+        posts: [
+            {type: Schema.Types.ObjectId,
+            ref:"BlogPosts"}
+        ],
+        comments: [
+            {type: Schema.Types.ObjectId,
+            ref:"Comment"}
+        ],
     },
     {
         collection:"authors"
