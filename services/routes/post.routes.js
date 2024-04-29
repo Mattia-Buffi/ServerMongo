@@ -1,5 +1,6 @@
 import { Router } from "express";
 import BlogPost  from "../models/blogpost.model.js"
+import Author from "../models/author.model.js";
 
 export const postRoute=Router();
 
@@ -22,9 +23,12 @@ postRoute.get("/:id", async (req,res,next)=>{
     }
    });
 //inserimento nuovo post
-postRoute.post("/", async (req,res,next)=>{
+postRoute.post("/:id", async (req,res,next)=>{
     try{
-       let post= await BlogPost.create(req.body)
+       let author= await Author.findById(req.params.id) 
+       let post= await BlogPost.create({...req.body, author: author})
+        author.posts.push(post._id)
+        await author.save();
        res.send(post)
     }catch(err){
        next(err)

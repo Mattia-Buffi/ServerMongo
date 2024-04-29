@@ -41,7 +41,7 @@ authorRoute.get("/:id/blogPosts", async (req,res,next)=>{
 authorRoute.post("/",cloudinaryMiddleware, async (req,res,next)=>{
     
     try{
-        let author= await Author.create(req.body);
+        let author= await Author.create(req.file['jsonFile'],...{avatar: req.file['imageFile'].path});
 
         res.send(author).status(201);
         //registrare anche l'avatar
@@ -53,7 +53,7 @@ authorRoute.post("/",cloudinaryMiddleware, async (req,res,next)=>{
 authorRoute.put("/:id", async (req,res,next)=>{
     try{
         let author= await Author.findByIdAndUpdate(req.param.id,req.body,{ new:true});
-        res.send(author).status(400);
+        res.send(author).status(200);
     }catch(err){
         next(err)
     }
