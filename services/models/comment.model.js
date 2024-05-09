@@ -10,6 +10,10 @@ const CommentScheme=new Schema(
         type:String,
         require:true,
     },
+    postID:{
+        type:String,
+        require:true,
+    },
     },{
         collection:"comments",
         timestamps:true

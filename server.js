@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import cors from "cors"
 import { authorRoute } from "./services/routes/author.routes.js";
 import { postRoute } from "./services/routes/post.routes.js"
+import { commentRoute } from "./services/routes/comment.routes.js";
+import { authorizRoute } from "./services/routes/authoriz.routes.js";
 
 //inizilizzare file .env
 config();
@@ -14,8 +16,12 @@ app.use(express.json());
 app.use(cors());
 
 //importare le route
+app.use("/sign",authorizRoute);
+
 app.use("/authors",authorRoute);
 app.use("/blogPosts",postRoute);
+app.use("/comment",commentRoute);
+
 
 //inizializzare server
 const initServer= async ()=>{

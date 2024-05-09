@@ -19,6 +19,7 @@ const authorScheme = new Schema(
         password:{
             type:String,
             required: true,
+            select: false,
         },
         dataNascita: {
             type:String,

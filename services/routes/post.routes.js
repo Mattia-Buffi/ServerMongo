@@ -1,13 +1,16 @@
 import { Router } from "express";
 import BlogPost  from "../models/blogpost.model.js"
 import Author from "../models/author.model.js";
+import { authMiddleware } from "../authorization/index.js";
+import cloudinaryMiddleware from "../middleware/multer.js"
 
 export const postRoute=Router();
 
-//lista dei post
-postRoute.get("/", async (req,res,next)=>{
+//lista dei post <-- SPOSTATA NELLE AUTHORIZZATE
+postRoute.get("/home",authMiddleware, async (req,res,next)=>{
     try{
-       let posts= await BlogPost.find();
+        //trovo tutti i post - popolo oggetto author con le voci di interesse
+       let posts= await BlogPost.find().populate({ path: 'author', select: 'nome cognome avatar' })
        res.send(posts)
     }catch(err){
        next(err)
@@ -16,16 +19,16 @@ postRoute.get("/", async (req,res,next)=>{
 //post specifico 
 postRoute.get("/:id", async (req,res,next)=>{
     try{
-       let post= await BlogPost.findOne({_id:req.params.id})
+       let post= await BlogPost.findOne({_id:req.params.id}).populate({ path: 'author', select: 'nome cognome avatar' })
        res.send(post)
     }catch(err){
        next(err)
     }
    });
-//inserimento nuovo post
-postRoute.post("/:id", async (req,res,next)=>{
+//inserimento nuovo post con id autore
+postRoute.post("/new",authMiddleware,async (req,res,next)=>{
     try{
-       let author= await Author.findById(req.params.id) 
+       let author= await Author.findById(req.user._id) 
        let post= await BlogPost.create({...req.body, author: author})
         author.posts.push(post._id)
         await author.save();

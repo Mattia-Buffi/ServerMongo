@@ -3,13 +3,14 @@ import Author from "../models/author.model.js";
 
 import BlogPost  from "../models/blogpost.model.js"
 import cloudinaryMiddleware from "../middleware/multer.js"
+import { authMiddleware } from "../authorization/index.js";
 
 //creo ed aposto il router
 export const authorRoute= Router();
 
 //definisco i comportmenti api
 //lista completa autori
-authorRoute.get("/", async (req,res,next)=>{
+authorRoute.get("/",authMiddleware, async (req,res,next)=>{
  try{
     let authors= await Author.find();
     res.send(authors)
@@ -20,7 +21,7 @@ authorRoute.get("/", async (req,res,next)=>{
 //autore specifico
 authorRoute.get("/:id", async (req,res,next)=>{
     try{
-       let author= await Author.findById(req.params.id);
+       let author= await Author.findById(req.params.id).populate('posts');
        res.send(author)
     }catch(err){
        next(err)
@@ -29,26 +30,30 @@ authorRoute.get("/:id", async (req,res,next)=>{
 // blogpost per utente specifico
 authorRoute.get("/:id/blogPosts", async (req,res,next)=>{
     try{
-       let author= await Author.findById(req.params.id);
-       let blogs= await BlogPost.find({author:{name : author.nome}})
-       res.send(blogs)
+       let author= await Author.findById(req.params.id).populate('posts');
+
+    //    let blogs= await BlogPost.find({author:{name : author.nome}})
+    // elimita poiche creato il referencinsg nel database
+       res.send(author.posts)
     }catch(err){
        next(err)
     }
    })
 
-//nuovo autore
-authorRoute.post("/",cloudinaryMiddleware, async (req,res,next)=>{
-    
-    try{
-        let author= await Author.create(req.file['jsonFile'],...{avatar: req.file['imageFile'].path});
+//nuovo autore <-- SPOSTATA IN ROUTE SENZA AUTORIZZAZIONE
+// authorRoute.post("/new",cloudinaryMiddleware, async (req,res,next)=>{  
+//     try{
+//         console.log(req.body.data)
+//         let data= JSON.parse(req.body.data)
+//         // let author= await Author.create({...data});
+//         let author= await Author.create({...data, avatar: req.file.path});
 
-        res.send(author).status(201);
-        //registrare anche l'avatar
-    }catch(err){
-        next(err)
-    }
-    })
+//         res.send(author).status(201);
+//         //registrare anche l'avatar
+//     }catch(err){
+//         next(err)
+//     }
+//     })
 //modifica autore da sostituire con patch
 authorRoute.put("/:id", async (req,res,next)=>{
     try{
@@ -68,7 +73,16 @@ authorRoute.delete("/:id", async (req,res,next)=>{
     }
     })
 
-    //modifica dell'avatar
-    // authorRoute.patch("/:id",cloudinaryMiddleware,async(req,res,next)=>{
-        
-    // })
+    //modifica dell'avatar OK Funziona
+    authorRoute.patch("/:id/avatar",cloudinaryMiddleware,async(req,res,next)=>{
+        try {
+        let authorUP= await Author.findByIdAndUpdate(
+            req.params.id,
+            {avatar: req.file.path},
+            {new:true}
+        );
+        res.send(authorUP)
+        }catch(err){
+            next(err)
+        }
+    })
