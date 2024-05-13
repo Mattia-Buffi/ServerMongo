@@ -2,7 +2,6 @@ import { Router } from "express";
 import Author from "../models/author.model.js";
 
 import BlogPost  from "../models/blogpost.model.js"
-import cloudinaryMiddleware from "../middleware/multer.js"
 import { authMiddleware } from "../authorization/index.js";
 
 //creo ed aposto il router
@@ -74,7 +73,7 @@ authorRoute.delete("/:id", async (req,res,next)=>{
     })
 
     //modifica dell'avatar OK Funziona
-    authorRoute.patch("/:id/avatar",cloudinaryMiddleware,async(req,res,next)=>{
+    authorRoute.patch("/:id/avatar",async(req,res,next)=>{
         try {
         let authorUP= await Author.findByIdAndUpdate(
             req.params.id,

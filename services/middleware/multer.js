@@ -11,9 +11,13 @@ cloudinary.config({
     api_secret:process.env.CLOUD_API_SECRET
 })
 
-export default multer({
-    storage:new CloudinaryStorage({
-        cloudinary,
-        params:{folder:"avatars",},
-    })
-}).single("avatar")
+let storage= new CloudinaryStorage({
+    cloudinary,
+    params:{folder: 
+        (req,file)=>{
+            return (file.fieldname==='avatar')?'avatars':'covers'
+        }
+    }
+})
+const upImage = multer({storage: storage});
+export default upImage;

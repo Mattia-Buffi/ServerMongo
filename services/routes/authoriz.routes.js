@@ -1,29 +1,16 @@
 import { Router } from "express";
 import Author from "../models/author.model.js";
 import BlogPost from "../models/blogpost.model.js";
-import cloudinaryMiddleware from "../middleware/multer.js"
+import upImage from "../middleware/multer.js"
 import bcrypt from 'bcryptjs'
 import { generateJWT } from "../authorization/index.js";
 
 export const authorizRoute=Router();
 
-//anteprima ultimi 3 post di accesso al blog
-authorizRoute.get("/home", async (req,res,next)=>{
-    try{
-        //trovo tutti i post - popolo oggetto author con le voci di interesse
-        //ordino per caricamento e limito a 3 per la home senza accesso
-       let posts= await BlogPost.find().populate({ path: 'author', select: 'nome cognome avatar' })
-                                // .sort({updatedAt:1})
-                                // .limit(3);
-       res.send(posts)
-    }catch(err){
-       next(err)
-    }
-   });
 //rotte per accedere alla password di verifica e loging tramite token
 
 //registrazione nuovo utente
-authorizRoute.post("/new",cloudinaryMiddleware, async (req,res,next)=>{   
+authorizRoute.post("/new",upImage.single('avatar'), async (req,res,next)=>{   
     try{
         let data= JSON.parse(req.body.data)
         let author= await Author.create({...data, 
@@ -39,7 +26,7 @@ authorizRoute.post("/new",cloudinaryMiddleware, async (req,res,next)=>{
 //rotta di log in per generazione del token
 authorizRoute.post('/login',async (req,res,next)=>{
     try {
-        //cerco lutente
+        //cerco l'utente
         let user = await Author.findOne({email: req.body.email}).select('password nome cognome avatar')
         if(user){
             //verifico la pw comparando con la criptata
@@ -56,7 +43,6 @@ authorizRoute.post('/login',async (req,res,next)=>{
         }else{
             res.status(400).send('Utente non trovato')
         }
-
     } catch (error) {
         next(error)
     }

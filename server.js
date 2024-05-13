@@ -20,7 +20,7 @@ app.use("/sign",authorizRoute);
 
 app.use("/authors",authorRoute);
 app.use("/blogPosts",postRoute);
-app.use("/comment",commentRoute);
+app.use("/comments",commentRoute);
 
 
 //inizializzare server
@@ -30,7 +30,7 @@ const initServer= async ()=>{
         await mongoose.connect(process.env.MONGO_URL)
         console.log('Connesso al database')
         //abilito il server
-        app.listen(process.env.PORT,()=>{
+        app.listen(process.env.PORT || 3001,()=>{
             console.log('Il server ascolta alla porta 3001');
         });
     }
