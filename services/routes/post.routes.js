@@ -42,18 +42,17 @@ postRoute.post("/new",authMiddleware,upImage.single('cover'),async (req,res,next
     }
    });
 //inserisco o tolgo il like
-postRoute.patch("/:id/liked",authMiddleware, async (req,res,next)=>{
+postRoute.post("/:id/liked",authMiddleware, async (req,res,next)=>{
     try{
-        let postUP= await BlogPost.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            {new:true}
-        );
+        let postUP= await BlogPost.findById(req.params.id)
+        if(postUP.likes.includes(req.user._id)) postUP.likes=postUP.likes.filter(e=>e!==req.user._id)
+        else postUP.likes.push(req.user_id)
+        await postUP.save()
         res.send(postUP.likes).status(200);
     }catch(err){next(err)}
 })
 //modifica di un post esistente
-postRoute.put("/:id", async (req,res,next)=>{
+postRoute.put("/:id",authMiddleware, async (req,res,next)=>{
     try{
         let post= await BlogPost.findByIdAndUpdate(req.param.id,req.body,{ new:true});
         res.send(post).status(400);
@@ -62,7 +61,7 @@ postRoute.put("/:id", async (req,res,next)=>{
     }
     });
 //cancellazione di un articolo
-postRoute.delete("/:id", async (res,req,next)=>{
+postRoute.delete("/:id",authMiddleware, async (res,req,next)=>{
     try{
         await BlogPost.findByIdAndDelete(req.params.id);
         res.send('Post cancellato').status(204)

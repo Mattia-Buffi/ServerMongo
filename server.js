@@ -6,12 +6,17 @@ import { authorRoute } from "./services/routes/author.routes.js";
 import { postRoute } from "./services/routes/post.routes.js"
 import { commentRoute } from "./services/routes/comment.routes.js";
 import { authorizRoute } from "./services/routes/authoriz.routes.js";
+import passport from "passport"
+import googleStrategy from "./services/authorization/passport.js";
 
 //inizilizzare file .env
 config();
 //creazione del server e utilizzo dati json
 const app=express();
 app.use(express.json());
+//login goolge
+passport.use("google", googleStrategy)
+
 //cors
 app.use(cors());
 

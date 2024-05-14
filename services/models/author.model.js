@@ -16,9 +16,13 @@ const authorScheme = new Schema(
             type:String,
             required: true,
         },
+        googleId:{
+            type:String,
+            required:false
+        },
         password:{
             type:String,
-            required: true,
+            required: false,
             select: false,
         },
         dataNascita: {

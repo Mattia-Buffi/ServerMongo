@@ -1,9 +1,9 @@
 import { Router } from "express";
 import Author from "../models/author.model.js";
-import BlogPost from "../models/blogpost.model.js";
 import upImage from "../middleware/multer.js"
 import bcrypt from 'bcryptjs'
 import { generateJWT } from "../authorization/index.js";
+import passport from "passport";
 
 export const authorizRoute=Router();
 
@@ -47,3 +47,18 @@ authorizRoute.post('/login',async (req,res,next)=>{
         next(error)
     }
 })
+authorizRoute.get("/googleLogin",
+    passport.authenticate("google", { scope: ["profile", "email"] })
+  )
+  
+authorizRoute.get("/callback",
+    passport.authenticate("google", { session: false }),
+    (req, res, next) => {
+      try {
+        //devo andare a verificare che il token passato ci sia e salvarlo
+        res.redirect(`http://localhost:3000?accessToken=${req.user.accessToken}`)
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
